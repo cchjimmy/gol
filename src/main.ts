@@ -24,6 +24,8 @@
   canvas.style.transform = "translate(-50%, -50%)";
   canvas.style.background = "#000000";
 
+  document.body.style.touchAction = "none";
+
   let board: number[][] = [];
 
   for (let i = 0; i < h; ++i) {
@@ -69,7 +71,7 @@
 
   setInterval(() => {
     board = stepSlidingWindow(board, rules);
-  }, 200);
+  }, 150);
 
   function loop() {
     if (ctx) {
