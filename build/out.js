@@ -21,7 +21,7 @@
     canvas.style.left = "50%";
     canvas.style.transform = "translate(-50%, -50%)";
     canvas.style.background = "#000000";
-    document.body.style.touchAction = "none";
+    canvas.style.touchAction = "none";
     let board = [];
     for (let i = 0; i < h; ++i) {
       board[i] = [];

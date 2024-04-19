@@ -24,7 +24,7 @@
   canvas.style.transform = "translate(-50%, -50%)";
   canvas.style.background = "#000000";
 
-  document.body.style.touchAction = "none";
+  canvas.style.touchAction = "none";
 
   let board: number[][] = [];
 
