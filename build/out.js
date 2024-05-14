@@ -3,6 +3,7 @@
   (function() {
     const canvas = document.querySelector("canvas");
     const ctx = canvas.getContext("2d");
+    const clearButton = document.querySelector("button");
     if (!ctx)
       return;
     const rules = [
@@ -39,6 +40,8 @@
       isPointerDown = false;
     };
     window.onpointermove = (e) => {
+      if (!isPointerDown)
+        return;
       let computedStyleCanvas = getComputedStyle(canvas);
       let canvasTop = (innerHeight - parseFloat(computedStyleCanvas.height)) / 2;
       let canvasLeft = (innerWidth - parseFloat(computedStyleCanvas.width)) / 2;
@@ -48,22 +51,19 @@
       y = Math.round(y);
       x = clamp(x, 0, w - 1);
       y = clamp(y, 0, h - 1);
-      if (!isPointerDown)
-        return;
       board[y][x] = 1;
     };
+    clearButton.onclick = () => clearBoard(board);
     setInterval(() => {
       board = stepSlidingWindow(board, rules);
     }, 150);
-    function loop() {
-      if (ctx) {
-        draw(board, ctx);
-        ctx.fillStyle = "#FF0000";
-        ctx.fillRect(x, y, 1, 1);
-      }
-      requestAnimationFrame(loop);
+    function loop(ctx2) {
+      draw(board, ctx2);
+      ctx2.fillStyle = "#FF0000";
+      ctx2.fillRect(x, y, 1, 1);
+      requestAnimationFrame(() => loop(ctx2));
     }
-    loop();
+    loop(ctx);
   })();
   function stepSlidingWindow(board, rules) {
     const h = board.length;
@@ -114,5 +114,12 @@
   }
   function clamp(x, min, max) {
     return Math.min(Math.max(x, min), max);
+  }
+  function clearBoard(board) {
+    for (let i = 0; i < board.length; ++i) {
+      for (let j = 0; j < board[i].length; ++j) {
+        board[i][j] = 0;
+      }
+    }
   }
 })();

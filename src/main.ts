@@ -1,6 +1,7 @@
 (function () {
   const canvas = <HTMLCanvasElement>document.querySelector("canvas");
   const ctx = canvas.getContext("2d");
+  const clearButton = <HTMLButtonElement>document.querySelector("button");
 
   if (!ctx) return;
 
@@ -49,6 +50,8 @@
   };
 
   window.onpointermove = (e: PointerEvent) => {
+    if (!isPointerDown) return;
+
     let computedStyleCanvas = getComputedStyle(canvas);
     let canvasTop = (innerHeight - parseFloat(computedStyleCanvas.height)) / 2;
     let canvasLeft = (innerWidth - parseFloat(computedStyleCanvas.width)) / 2;
@@ -62,27 +65,23 @@
     x = clamp(x, 0, w - 1);
     y = clamp(y, 0, h - 1);
 
-    if (!isPointerDown) return;
-
     board[y][x] = 1;
   };
 
-  // glider(board, 0, 0);
+  clearButton.onclick = () => clearBoard(board);
 
   setInterval(() => {
     board = stepSlidingWindow(board, rules);
   }, 150);
 
-  function loop() {
-    if (ctx) {
-      draw(board, ctx);
-      ctx.fillStyle = "#FF0000";
-      ctx.fillRect(x, y, 1, 1);
-    }
-    requestAnimationFrame(loop);
+  function loop(ctx: CanvasRenderingContext2D) {
+    draw(board, ctx);
+    ctx.fillStyle = "#FF0000";
+    ctx.fillRect(x, y, 1, 1);
+    requestAnimationFrame(() => loop(ctx));
   }
 
-  loop();
+  loop(ctx);
 })();
 
 function step(board: number[][], rules: number[][]): number[][] {
@@ -173,4 +172,12 @@ function glider(board: number[][], x: number, y: number): void {
 
 function clamp(x: number, min: number, max: number): number {
   return Math.min(Math.max(x, min), max);
+}
+
+function clearBoard(board: number[][]): void {
+  for (let i = 0; i < board.length; ++i) {
+    for (let j = 0; j < board[i].length; ++j) {
+      board[i][j] = 0;
+    }
+  }
 }
