@@ -28,27 +28,15 @@ const rules = [
 	[0, 0, 1, 1, 0, 0, 0, 0, 0],
 ];
 
-// let board: number[][] = [];
-// 
-// for (let i = 0; i < h; ++i) {
-// 	board[i] = [];
-// 	for (let j = 0; j < w; ++j) {
-// 		board[i][j] = 0;
-// 	}
-// }
-
 let board: number[] = new Array(w * h).fill(0);
-
-board[0] = 1;
 
 let isPointerDown = false;
 
+window.onpointerdown = () => isPointerDown = true;
+window.onpointerup = () => isPointerDown = false;
+
 let x: number;
 let y: number;
-
-window.onpointerdown = () => isPointerDown = true;
-
-window.onpointerup = () => isPointerDown = false;
 
 window.onpointermove = (e: PointerEvent) => {
 	let computedStyleCanvas = getComputedStyle(canvas);
@@ -64,15 +52,8 @@ window.onpointermove = (e: PointerEvent) => {
 
 	x = Math.round(x);
 	y = Math.round(y);
-
-	if (!isPointerDown || x < 0 || x > w - 1 || y < 0 || y > h - 1) return;
-	x = clamp(x, 0, w - 1);
-	y = clamp(y, 0, h - 1);
-	// board[y][x] = 1;
-	board[y * w + x] = 1;
 };
 
-// clearButton.onclick = () => clearBoard(board);
 clearButton.onclick = () => board.fill(0);
 
 let stepSpeed = 150;
@@ -90,9 +71,17 @@ speedRange.onchange = (e: Event) => {
 let last = performance.now();
 function loop(ctx: CanvasRenderingContext2D) {
 	let time = performance.now() - last;
+
 	gol.draw1D(w, board, ctx);
 	ctx.fillStyle = "#FF0000";
 	ctx.fillRect(x, y, 1, 1);
+
+	if (isPointerDown && x >= 0 && x <= w && y >= 0 && y <= h) {
+		x = clamp(x, 0, w);
+		y = clamp(y, 0, h);
+		board[y * w + x] = 1;
+	}
+
 	if (!pause && time > stepSpeed) {
 		board = gol.stepSlidingWindow1D(w, board, rules);
 		last = performance.now();
@@ -102,8 +91,6 @@ function loop(ctx: CanvasRenderingContext2D) {
 
 if (ctx) loop(ctx);
 
-
 function clamp(x: number, min: number, max: number): number {
 	return Math.min(Math.max(x, min), max);
 }
-
